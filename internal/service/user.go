@@ -11,31 +11,31 @@ import (
 	"subsctiption-service/internal/repository"
 )
 
-type Subscriber struct {
+type User struct {
 	repo   repository.RepositoryInterface
 	logger *zap.Logger
 }
 
-func NewSubscriberService(repository repository.RepositoryInterface, logger *zap.Logger) *Subscriber {
-	return &Subscriber{
+func NewUserService(repository repository.RepositoryInterface, logger *zap.Logger) *User {
+	return &User{
 		repo:   repository,
 		logger: logger,
 	}
 }
 
-func (s *Subscriber) Subscribe(ctx context.Context, user request.Subscriber) (response.Subscriber, error) {
-	s.logger.Info("subscriber service called")
-	sub, err := s.repo.Subscribe(ctx, user)
+func (s *User) User(ctx context.Context, user request.User) (response.User, error) {
+	s.logger.Info("user service called")
+	sub, err := s.repo.User(ctx, user)
 	if err != nil {
-		s.logger.Error("subscriber service failed", zap.Error(err))
-		return response.Subscriber{}, err
+		s.logger.Error("user service failed", zap.Error(err))
+		return response.User{}, err
 	}
 
 	return dbModelToJsonModel(sub), nil
 }
 
-func dbModelToJsonModel(subscriber db.Subscribe) response.Subscriber {
-	return response.Subscriber{
+func dbModelToJsonModel(subscriber db.User) response.User {
+	return response.User{
 		UserId:    subscriber.UserID,
 		Email:     subscriber.Email,
 		CreatedAt: subscriber.CreateTime.Format(time.RFC3339),

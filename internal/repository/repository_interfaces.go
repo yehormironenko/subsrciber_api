@@ -8,7 +8,7 @@ import (
 )
 
 type RepositoryInterface interface {
-	Subscribe(ctx context.Context, subscriber request.Subscriber) (db.Subscribe, error)
+	User(ctx context.Context, subscriber request.User) (db.User, error)
 	//Unsubscribe
 	//UpdateSubscriber
 	//GetSubscriptions

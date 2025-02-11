@@ -21,5 +21,5 @@ func NewHandler(services service.ServiceInterface, logger *zap.Logger) *Handler 
 
 func (h *Handler) Register(r *gin.Engine) {
 	r.GET(path.EchoRoute, h.Echo)
-	r.POST(path.SubscribeRoute, h.Subscriber)
+	r.POST(path.CreateUserRoute, h.User)
 }

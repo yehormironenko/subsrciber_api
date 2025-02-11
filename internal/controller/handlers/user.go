@@ -9,10 +9,10 @@ import (
 	"subsctiption-service/internal/model/request"
 )
 
-func (h *Handler) Subscriber(c *gin.Context) {
-	var user request.Subscriber
+func (h *Handler) User(c *gin.Context) {
+	var user request.User
 
-	h.logger.Info("Subscriber handler called")
+	h.logger.Info("User handler called")
 
 	if err := c.ShouldBindJSON(&user); err != nil {
 		h.logger.Error("Failed to bind json body", zap.Error(err))
@@ -27,7 +27,7 @@ func (h *Handler) Subscriber(c *gin.Context) {
 		return
 	}
 
-	msg, err := h.services.Subscribe(c.Request.Context(), user)
+	msg, err := h.services.User(c.Request.Context(), user)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return

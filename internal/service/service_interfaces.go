@@ -9,13 +9,13 @@ import (
 
 type ServiceInterface interface {
 	EchoServiceInterface
-	SubscriberServiceInterface
+	UserServiceInterface
 }
 
 type EchoServiceInterface interface {
 	Echo(ctx context.Context) (string, error)
 }
 
-type SubscriberServiceInterface interface {
-	Subscribe(ctx context.Context, user request.Subscriber) (response.Subscriber, error)
+type UserServiceInterface interface {
+	User(ctx context.Context, user request.User) (response.User, error)
 }

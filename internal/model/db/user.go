@@ -2,7 +2,7 @@ package db
 
 import "time"
 
-type Subscribe struct {
+type User struct {
 	UserID     int
 	Email      string
 	CreateTime time.Time

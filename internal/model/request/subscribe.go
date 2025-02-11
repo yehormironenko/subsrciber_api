@@ -1,5 +1,6 @@
 package request
 
-type Subscriber struct {
-	Email string `json:"email" validate:"required,email"`
+type SubscribeRequest struct {
+	UserID        uint   `validate:"required,gte=1"`
+	WalletAddress string `validate:"required,gte=1,lte=50"`
 }
