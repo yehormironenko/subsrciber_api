@@ -25,16 +25,16 @@ func NewUserService(repository repository.RepositoryInterface, logger *zap.Logge
 
 func (s *User) User(ctx context.Context, user request.User) (response.User, error) {
 	s.logger.Info("user service called")
-	sub, err := s.repo.User(ctx, user)
+	dbUser, err := s.repo.User(ctx, user)
 	if err != nil {
 		s.logger.Error("user service failed", zap.Error(err))
 		return response.User{}, err
 	}
 
-	return dbModelToJsonModel(sub), nil
+	return dbUserModelToJsonModel(dbUser), nil
 }
 
-func dbModelToJsonModel(subscriber db.User) response.User {
+func dbUserModelToJsonModel(subscriber db.User) response.User {
 	return response.User{
 		UserId:    subscriber.UserID,
 		Email:     subscriber.Email,

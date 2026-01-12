@@ -3,11 +3,13 @@ package client
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	_ "github.com/lib/pq"
 
-	"go.uber.org/zap"
 	"subsctiption-service/internal/config"
+
+	"go.uber.org/zap"
 )
 
 func CreatePostgresClient(c *config.Config, logger *zap.Logger) *sql.DB {
@@ -22,6 +24,10 @@ func CreatePostgresClient(c *config.Config, logger *zap.Logger) *sql.DB {
 	if err := db.Ping(); err != nil {
 		logger.Fatal("Failed to connect to PostgreSQL", zap.Error(err))
 	}
+
+	db.SetMaxOpenConns(25)
+	db.SetMaxIdleConns(5)
+	db.SetConnMaxLifetime(5 * time.Minute)
 
 	logger.Info("Successfully connected to PostgreSQL")
 	return db

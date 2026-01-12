@@ -8,11 +8,13 @@ import (
 type Service struct {
 	EchoServiceInterface
 	UserServiceInterface
+	SubscriberServiceInterface
 }
 
 func NewService(repo repository.RepositoryInterface, logger *zap.Logger) ServiceInterface {
 	return &Service{
-		EchoServiceInterface: NewEchoService(logger),
-		UserServiceInterface: NewUserService(repo, logger),
+		EchoServiceInterface:       NewEchoService(logger),
+		UserServiceInterface:       NewUserService(repo, logger),
+		SubscriberServiceInterface: NewSubscriber(repo, logger),
 	}
 }

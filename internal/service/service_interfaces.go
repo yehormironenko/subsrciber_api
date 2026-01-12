@@ -10,6 +10,7 @@ import (
 type ServiceInterface interface {
 	EchoServiceInterface
 	UserServiceInterface
+	SubscriberServiceInterface
 }
 
 type EchoServiceInterface interface {
@@ -18,4 +19,8 @@ type EchoServiceInterface interface {
 
 type UserServiceInterface interface {
 	User(ctx context.Context, user request.User) (response.User, error)
+}
+
+type SubscriberServiceInterface interface {
+	Subscribe(ctx context.Context, subscriber request.SubscribeRequest) (response.SubscribeResponse, error)
 }

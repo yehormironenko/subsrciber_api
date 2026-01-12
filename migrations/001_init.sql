@@ -1,5 +1,3 @@
-CREATE DATABASE blockchain_notifications;
-\c blockchain_notifications;
 CREATE TABLE users (
                        id SERIAL PRIMARY KEY,
                        email VARCHAR(255) UNIQUE NOT NULL,
@@ -32,3 +30,17 @@ CREATE TABLE transactions (
 
 CREATE INDEX idx_wallet_address ON wallet_subscriptions(wallet_address);
 CREATE INDEX idx_tx_hash ON transactions(tx_hash);
+
+CREATE OR REPLACE FUNCTION create_default_notification_preferences()
+    RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO notification_preferences (user_id, email_notifications, websocket_notifications)
+    VALUES (NEW.id, FALSE, FALSE);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_create_notification_preferences
+    AFTER INSERT ON users
+    FOR EACH ROW
+EXECUTE FUNCTION create_default_notification_preferences();
