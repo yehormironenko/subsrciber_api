@@ -40,6 +40,8 @@ func (r *Repository) User(ctx context.Context, user request.User) (db.User, erro
 func (r *Repository) Subscribe(ctx context.Context, subscriber request.SubscribeRequest) (db.Subscribe, error) {
 	r.logger.Info("subscribing user", zap.Any("subscriber", subscriber))
 	tx, err := r.dbConn.BeginTx(ctx, nil)
+	defer tx.Rollback()
+
 	if err != nil {
 		r.logger.Error("failed to start transaction", zap.Error(err))
 		return db.Subscribe{}, err
@@ -67,6 +69,42 @@ func (r *Repository) Subscribe(ctx context.Context, subscriber request.Subscribe
 		dbSubscriber.Notification = &db.Notification{}
 		updateQuery := "UPDATE notification_preferences SET email_notifications = $1 WHERE user_id = $2 RETURNING email_notifications"
 		err = tx.QueryRowContext(ctx, updateQuery, subscriber.Notification.Email, subscriber.UserID).Scan(&dbSubscriber.Notification.Email)
+		if err != nil {
+			r.logger.Error("failed to update user", zap.Error(err))
+			return db.Subscribe{}, err
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		r.logger.Error("failed to commit transaction", zap.Error(err))
+		return db.Subscribe{}, err
+	}
+
+	return dbSubscriber, nil
+}
+
+func (r *Repository) Unsubscribe(ctx context.Context, unsubscribeRequest request.UnsubscribeRequest) (db.Subscribe, error) {
+	r.logger.Info("unsubscribing user", zap.Any("unsubscribe", unsubscribeRequest))
+	tx, err := r.dbConn.BeginTx(ctx, nil)
+	defer tx.Rollback()
+	if err != nil {
+		r.logger.Error("failed to start transaction", zap.Error(err))
+		return db.Subscribe{}, err
+	}
+
+	var dbSubscriber db.Subscribe
+	checkQuery := "SELECT id, user_id, wallet_address, created_at FROM wallet_subscriptions WHERE user_id = $1 and wallet_address= $2"
+	err = tx.QueryRowContext(ctx, checkQuery, unsubscribeRequest.UserID, unsubscribeRequest.WalletAddress).Scan(&dbSubscriber.SubscriptionID, &dbSubscriber.UserID, &dbSubscriber.WalletAddress, &dbSubscriber.CreatedAt)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		r.logger.Error("failed to check user", zap.Error(err))
+		return db.Subscribe{}, err
+	}
+	// TODO add websocket logic
+	if unsubscribeRequest.Notification != nil {
+		dbSubscriber.Notification = &db.Notification{}
+		updateQuery := "UPDATE notification_preferences SET email_notifications = $1 WHERE user_id = $2 RETURNING email_notifications"
+		err = tx.QueryRowContext(ctx, updateQuery, unsubscribeRequest.Notification.Email, unsubscribeRequest.UserID).Scan(&dbSubscriber.Notification.Email)
 		if err != nil {
 			r.logger.Error("failed to update user", zap.Error(err))
 			return db.Subscribe{}, err

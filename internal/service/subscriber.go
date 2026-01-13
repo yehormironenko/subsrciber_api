@@ -35,15 +35,31 @@ func (s *Subscriber) Subscribe(ctx context.Context, subscriber request.Subscribe
 	return dbSubscriberModelToJsonModel(sub), nil
 }
 
+func (s *Subscriber) Unsubscribe(ctx context.Context, unsubscribe request.UnsubscribeRequest) (response.SubscribeResponse, error) {
+	s.logger.Info("unsubscriber service called")
+	sub, err := s.repository.Unsubscribe(ctx, unsubscribe)
+	if err != nil {
+		s.logger.Error("unsubscriber service failed", zap.Error(err))
+		return response.SubscribeResponse{}, err
+	}
+
+	return dbSubscriberModelToJsonModel(sub), nil
+}
+
 func dbSubscriberModelToJsonModel(subscriber db.Subscribe) response.SubscribeResponse {
-	return response.SubscribeResponse{
+	resp := response.SubscribeResponse{
 		SubscriptionId: subscriber.SubscriptionID,
 		UserId:         subscriber.UserID,
 		WalletAddress:  subscriber.WalletAddress,
 		CreatedAt:      subscriber.CreatedAt.Format(time.RFC3339),
-		Notification: response.Notification{
+	}
+
+	if subscriber.Notification != nil {
+		resp.Notification = response.Notification{
 			Email:     &subscriber.Notification.Email,
 			WebSocket: &subscriber.Notification.WebSocket,
-		},
+		}
 	}
+
+	return resp
 }

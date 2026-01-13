@@ -23,4 +23,5 @@ type UserServiceInterface interface {
 
 type SubscriberServiceInterface interface {
 	Subscribe(ctx context.Context, subscriber request.SubscribeRequest) (response.SubscribeResponse, error)
+	Unsubscribe(ctx context.Context, unsubscribe request.UnsubscribeRequest) (response.SubscribeResponse, error)
 }
