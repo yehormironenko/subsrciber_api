@@ -7,9 +7,16 @@ INSERT INTO wallet_subscriptions (user_id, wallet_address) VALUES
                                                                (1, '0xEfG456...'),
                                                                (2, '0xH1J789...');
 
-INSERT INTO notification_preferences (user_id, email_notifications, websocket_notifications) VALUES
-                                                                                                 (1, TRUE, TRUE),
-                                                                                                 (2, TRUE, FALSE);
+-- Notification preferences are automatically created by trigger when wallet_subscriptions are inserted
+-- Update them to have custom test values
+UPDATE notification_preferences SET email_notifications = TRUE, websocket_notifications = TRUE
+WHERE user_id = 1 AND wallet_address = '0xAbC123...';
+
+UPDATE notification_preferences SET email_notifications = TRUE, websocket_notifications = FALSE
+WHERE user_id = 1 AND wallet_address = '0xEfG456...';
+
+UPDATE notification_preferences SET email_notifications = TRUE, websocket_notifications = FALSE
+WHERE user_id = 2 AND wallet_address = '0xH1J789...';
 
 INSERT INTO transactions (wallet_address, tx_hash, amount, timestamp) VALUES
                                                                           ('0xAbC123...', '0xTxHash123', 0.5, NOW()),

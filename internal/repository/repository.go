@@ -67,8 +67,8 @@ func (r *Repository) Subscribe(ctx context.Context, subscriber request.Subscribe
 	// TODO add websocket logic
 	if subscriber.Notification != nil {
 		dbSubscriber.Notification = &db.Notification{}
-		updateQuery := "UPDATE notification_preferences SET email_notifications = $1 WHERE user_id = $2 RETURNING email_notifications"
-		err = tx.QueryRowContext(ctx, updateQuery, subscriber.Notification.Email, subscriber.UserID).Scan(&dbSubscriber.Notification.Email)
+		updateQuery := "UPDATE notification_preferences SET email_notifications = $1 WHERE user_id = $2 AND wallet_address = $3 RETURNING email_notifications"
+		err = tx.QueryRowContext(ctx, updateQuery, subscriber.Notification.Email, subscriber.UserID, subscriber.WalletAddress).Scan(&dbSubscriber.Notification.Email)
 		if err != nil {
 			r.logger.Error("failed to update user", zap.Error(err))
 			return db.Subscribe{}, err
@@ -103,8 +103,8 @@ func (r *Repository) Unsubscribe(ctx context.Context, unsubscribeRequest request
 	// TODO add websocket logic
 	if unsubscribeRequest.Notification != nil {
 		dbSubscriber.Notification = &db.Notification{}
-		updateQuery := "UPDATE notification_preferences SET email_notifications = $1 WHERE user_id = $2 RETURNING email_notifications"
-		err = tx.QueryRowContext(ctx, updateQuery, unsubscribeRequest.Notification.Email, unsubscribeRequest.UserID).Scan(&dbSubscriber.Notification.Email)
+		updateQuery := "UPDATE notification_preferences SET email_notifications = $1 WHERE user_id = $2 AND wallet_address = $3 RETURNING email_notifications"
+		err = tx.QueryRowContext(ctx, updateQuery, unsubscribeRequest.Notification.Email, unsubscribeRequest.UserID, unsubscribeRequest.WalletAddress).Scan(&dbSubscriber.Notification.Email)
 		if err != nil {
 			r.logger.Error("failed to update user", zap.Error(err))
 			return db.Subscribe{}, err
