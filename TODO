@@ -1,9 +1,3 @@
-  2. Риск panic в internal/service/subscriber.go:44
-
-  Нет проверки на nil перед обращением к subscriber.Notification:
-  // Может быть nil → panic!
-  Email: &subscriber.Notification.Email
-
   3. Пароли в репозитории
 
   config.yaml содержит пароли в открытом виде - нужно перенести в переменные окружения или .env файл

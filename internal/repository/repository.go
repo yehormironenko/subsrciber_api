@@ -119,3 +119,82 @@ func (r *Repository) Unsubscribe(ctx context.Context, unsubscribeRequest request
 
 	return dbSubscriber, nil
 }
+
+func (r *Repository) GetSubscriptions(ctx context.Context, subscriptions request.Subscriptions) (db.Subscriptions, error) {
+	r.logger.Info("get subscriptions", zap.Any("subscriptions", subscriptions))
+
+	return r.getSubscriptions(ctx, subscriptions)
+}
+
+func (r *Repository) getSubscriptions(ctx context.Context, subscriptions request.Subscriptions) (db.Subscriptions, error) {
+	r.logger.Info("get subscriptions for user", zap.Any("subscriptions", subscriptions))
+
+	if subscriptions.WalletAddress != "" {
+		return r.getSubscriptionForWallet(ctx, subscriptions)
+	}
+
+	subsQuery := `SELECT ws.wallet_address,
+		COALESCE(np.email_notifications, FALSE) as email_notifications,
+		COALESCE(np.websocket_notifications, FALSE) as websocket_notifications
+	FROM wallet_subscriptions ws
+	LEFT JOIN notification_preferences np
+		ON ws.user_id = np.user_id AND ws.wallet_address = np.wallet_address
+	WHERE ws.user_id = $1`
+	rows, err := r.dbConn.QueryContext(ctx, subsQuery, subscriptions.UserId)
+	if err != nil {
+		return db.Subscriptions{}, err
+	}
+	defer rows.Close()
+
+	var result db.Subscriptions
+
+	result.UserID = subscriptions.UserId
+
+	for rows.Next() {
+		var wallet db.Wallet
+
+		err = rows.Scan(
+			&wallet.Address,
+			&wallet.Preferences.Email,
+			&wallet.Preferences.Websocket,
+		)
+		if err != nil {
+			return db.Subscriptions{}, err
+		}
+
+		result.Wallets = append(result.Wallets, wallet)
+	}
+
+	if err = rows.Err(); err != nil {
+		return db.Subscriptions{}, err
+	}
+
+	return result, nil
+}
+
+func (r *Repository) getSubscriptionForWallet(ctx context.Context, subscriptions request.Subscriptions) (db.Subscriptions, error) {
+	r.logger.Info("get subscriptions for wallet", zap.Any("subscriptions", subscriptions))
+
+	var dbSubscriber db.Subscriptions
+	var wallet db.Wallet
+
+	subsQuery := `SELECT ws.user_id, ws.wallet_address,
+		COALESCE(np.email_notifications, FALSE) as email_notifications,
+		COALESCE(np.websocket_notifications, FALSE) as websocket_notifications
+	FROM wallet_subscriptions ws
+	LEFT JOIN notification_preferences np
+		ON ws.user_id = np.user_id AND ws.wallet_address = np.wallet_address
+	WHERE ws.user_id = $1 AND ws.wallet_address = $2`
+
+	row := r.dbConn.QueryRowContext(ctx, subsQuery, subscriptions.UserId, subscriptions.WalletAddress)
+	err := row.Scan(&dbSubscriber.UserID, &wallet.Address, &wallet.Preferences.Email, &wallet.Preferences.Websocket)
+	if errors.Is(err, sql.ErrNoRows) {
+		return db.Subscriptions{UserID: subscriptions.UserId, Wallets: []db.Wallet{}}, nil
+	}
+	if err != nil {
+		r.logger.Error("failed to get user", zap.Error(err))
+		return db.Subscriptions{}, err
+	}
+	dbSubscriber.Wallets = append(dbSubscriber.Wallets, wallet)
+	return dbSubscriber, nil
+}

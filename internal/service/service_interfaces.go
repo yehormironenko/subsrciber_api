@@ -11,6 +11,7 @@ type ServiceInterface interface {
 	EchoServiceInterface
 	UserServiceInterface
 	SubscriberServiceInterface
+	SubscriptionsServiceInterface
 }
 
 type EchoServiceInterface interface {
@@ -24,4 +25,8 @@ type UserServiceInterface interface {
 type SubscriberServiceInterface interface {
 	Subscribe(ctx context.Context, subscriber request.SubscribeRequest) (response.SubscribeResponse, error)
 	Unsubscribe(ctx context.Context, unsubscribe request.UnsubscribeRequest) (response.SubscribeResponse, error)
+}
+
+type SubscriptionsServiceInterface interface {
+	Subscriptions(ctx context.Context, subscriber request.Subscriptions) (response.Subscriptions, error)
 }
