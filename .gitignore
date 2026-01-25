@@ -8,6 +8,7 @@
 
 # Jetbrains workspace files
 .idea/
+.claude
 /*.iml
 
 # go cover output

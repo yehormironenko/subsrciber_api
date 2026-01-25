@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"subsctiption-service/internal/path"
-	"subsctiption-service/internal/service"
+	"subscription-service/internal/path"
+	"subscription-service/internal/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"

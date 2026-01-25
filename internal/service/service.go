@@ -1,7 +1,7 @@
 package service
 
 import (
-	"subsctiption-service/internal/repository"
+	"subscription-service/internal/repository"
 
 	"go.uber.org/zap"
 )

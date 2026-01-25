@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"errors"
 
-	"subsctiption-service/internal/model/db"
-	"subsctiption-service/internal/model/request"
+	"subscription-service/internal/model/db"
+	"subscription-service/internal/model/request"
 
 	"go.uber.org/zap"
 )
@@ -231,7 +231,7 @@ func (r *Repository) UpdateSubscriber(ctx context.Context, update request.Update
                    WHERE user_id = $3`
 	args := []interface{}{
 		update.Notification.Email,
-		update.Notification.WebSocket,
+		update.Notification.Websocket,
 		update.UserID,
 	}
 

@@ -7,7 +7,7 @@ import (
 
 	_ "github.com/lib/pq"
 
-	"subsctiption-service/internal/config"
+	"subscription-service/internal/config"
 
 	"go.uber.org/zap"
 )

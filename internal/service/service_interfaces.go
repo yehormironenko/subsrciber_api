@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	"subsctiption-service/internal/model/request"
-	"subsctiption-service/internal/model/response"
+	"subscription-service/internal/model/request"
+	"subscription-service/internal/model/response"
 )
 
 type ServiceInterface interface {

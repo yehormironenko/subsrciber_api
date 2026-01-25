@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"subsctiption-service/internal/model/request"
+	"subscription-service/internal/model/request"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"

@@ -6,11 +6,11 @@ type Subscriptions struct {
 }
 
 type Wallet struct {
-	Address      string       `json:"address"`
-	Preferencies Preferencies `json:"preferencies"`
+	Address      string      `json:"address"`
+	Preferencies Preferences `json:"preferencies"`
 }
 
-type Preferencies struct {
+type Preferences struct {
 	EmailNotifications     *bool `json:"email_notifications,omitempty"`
 	WebSocketNotifications *bool `json:"websocket_notifications,omitempty"`
 }

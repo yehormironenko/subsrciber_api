@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
-	"subsctiption-service/internal/model/db"
-	"subsctiption-service/internal/model/request"
-	"subsctiption-service/internal/model/response"
-	"subsctiption-service/internal/repository"
+	"subscription-service/internal/model/db"
+	"subscription-service/internal/model/request"
+	"subscription-service/internal/model/response"
+	"subscription-service/internal/repository"
 
 	"go.uber.org/zap"
 )

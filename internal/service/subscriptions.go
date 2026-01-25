@@ -3,10 +3,10 @@ package service
 import (
 	"context"
 
-	"subsctiption-service/internal/model/db"
-	"subsctiption-service/internal/model/request"
-	"subsctiption-service/internal/model/response"
-	"subsctiption-service/internal/repository"
+	"subscription-service/internal/model/db"
+	"subscription-service/internal/model/request"
+	"subscription-service/internal/model/response"
+	"subscription-service/internal/repository"
 
 	"go.uber.org/zap"
 )
@@ -49,7 +49,7 @@ func dbSubscriptionsToJsonModel(subs db.Subscriptions) response.Subscriptions {
 	var wallets []response.Wallet
 	for _, v := range subs.Wallets {
 		wallets = append(wallets, response.Wallet{Address: v.Address,
-			Preferencies: response.Preferencies{EmailNotifications: &v.Preferences.Email, WebSocketNotifications: &v.Preferences.Websocket}})
+			Preferencies: response.Preferences{EmailNotifications: &v.Preferences.Email, WebSocketNotifications: &v.Preferences.Websocket}})
 	}
 
 	return response.Subscriptions{
