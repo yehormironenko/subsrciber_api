@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"strconv"
 
 	"subsctiption-service/internal/model/db"
 	"subsctiption-service/internal/model/request"
@@ -197,4 +198,63 @@ func (r *Repository) getSubscriptionForWallet(ctx context.Context, subscriptions
 	}
 	dbSubscriber.Wallets = append(dbSubscriber.Wallets, wallet)
 	return dbSubscriber, nil
+}
+
+func (r *Repository) UpdateSubscriber(ctx context.Context, update request.UpdateRequest) (db.Subscriptions, error) {
+	r.logger.Info("update subscriptions", zap.Any("update", update))
+
+	if update.Notification == nil {
+		return db.Subscriptions{}, errors.New("notification preferences required")
+	}
+
+	tx, err := r.dbConn.BeginTx(ctx, nil)
+	if err != nil {
+		r.logger.Error("failed to start transaction", zap.Error(err))
+		return db.Subscriptions{}, err
+	}
+	defer tx.Rollback()
+
+	updateQuery := `UPDATE notification_preferences
+                   SET email_notifications = $1, websocket_notifications = $2
+                   WHERE user_id = $3`
+	args := []interface{}{
+		update.Notification.Email,
+		update.Notification.WebSocket,
+		update.UserID,
+	}
+
+	if update.WalletAddress != "" {
+		updateQuery += " AND wallet_address = $4"
+		args = append(args, update.WalletAddress)
+	}
+
+	result, err := tx.ExecContext(ctx, updateQuery, args...)
+	if err != nil {
+		r.logger.Error("failed to update notification preferences", zap.Error(err))
+		return db.Subscriptions{}, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		r.logger.Error("failed to get rows affected", zap.Error(err))
+		return db.Subscriptions{}, err
+	}
+
+	if rowsAffected == 0 {
+		r.logger.Warn("no records updated", zap.Uint("user_id", update.UserID))
+		return db.Subscriptions{}, errors.New("no records updated")
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		r.logger.Error("failed to commit transaction", zap.Error(err))
+		return db.Subscriptions{}, err
+	}
+
+	// Вернуть обновленные данные
+	subscriptions := request.Subscriptions{
+		UserId:        strconv.Itoa(int(update.UserID)),
+		WalletAddress: update.WalletAddress,
+	}
+	return r.getSubscriptions(ctx, subscriptions)
 }

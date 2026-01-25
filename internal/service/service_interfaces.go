@@ -29,4 +29,5 @@ type SubscriberServiceInterface interface {
 
 type SubscriptionsServiceInterface interface {
 	Subscriptions(ctx context.Context, subscriber request.Subscriptions) (response.Subscriptions, error)
+	UpdatePreferences(ctx context.Context, update request.UpdateRequest) (response.Subscriptions, error)
 }

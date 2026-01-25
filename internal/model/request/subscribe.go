@@ -8,5 +8,5 @@ type SubscribeRequest struct {
 
 type Notification struct {
 	Email     bool `json:"email,omitempty"`
-	WebSocket bool `json:"webSocket,omitempty"` // TODO - implement webSocket notification
+	WebSocket bool `json:"webSocket,omitempty"`
 }

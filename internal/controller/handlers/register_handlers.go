@@ -29,4 +29,5 @@ func (h *Handler) Register(r *gin.Engine) {
 	r.POST(path.SubscribeRoute, h.Subscriber)
 	r.POST(path.UnsubscribeRoute, h.Unsubscriber)
 	r.POST(path.GetSubscriptionsRoute, h.Subscriptions)
+	r.PUT(path.UpdateRoute, h.UpdatePreferences)
 }

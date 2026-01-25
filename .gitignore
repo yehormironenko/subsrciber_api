@@ -1,0 +1,38 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+.DS_Store
+
+# Jetbrains workspace files
+.idea/
+/*.iml
+
+# go cover output
+/coverage.out
+/coverage.txt
+
+# local dev environment file
+/*.env
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Go workspace file
+go.work
+
+# main bin file
+main
+
+# Pact files
+pacts/
+
+# Vendor contents
+vendor/
+
+*.vscode

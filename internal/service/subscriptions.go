@@ -34,6 +34,17 @@ func (s *Subscriptions) Subscriptions(ctx context.Context, subscriptions request
 	return dbSubscriptionsToJsonModel(sub), nil
 }
 
+func (s *Subscriptions) UpdatePreferences(ctx context.Context, update request.UpdateRequest) (response.Subscriptions, error) {
+	s.logger.Info("update preferences service called")
+	sub, err := s.repository.UpdateSubscriber(ctx, update)
+	if err != nil {
+		s.logger.Error("update preferences service failed", zap.Error(err))
+		return response.Subscriptions{}, err
+	}
+
+	return dbSubscriptionsToJsonModel(sub), nil
+}
+
 func dbSubscriptionsToJsonModel(subs db.Subscriptions) response.Subscriptions {
 	var wallets []response.Wallet
 	for _, v := range subs.Wallets {

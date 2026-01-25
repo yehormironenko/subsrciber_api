@@ -12,6 +12,5 @@ type RepositoryInterface interface {
 	Subscribe(ctx context.Context, subscriber request.SubscribeRequest) (db.Subscribe, error)
 	Unsubscribe(ctx context.Context, subscriber request.UnsubscribeRequest) (db.Subscribe, error)
 	GetSubscriptions(ctx context.Context, subscriptions request.Subscriptions) (db.Subscriptions, error)
-	//UpdateSubscriber
-	//GetSubscriptions
+	UpdateSubscriber(ctx context.Context, update request.UpdateRequest) (db.Subscriptions, error)
 }
