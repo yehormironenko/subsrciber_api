@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"strconv"
 
 	"subsctiption-service/internal/model/db"
 	"subsctiption-service/internal/model/request"
@@ -41,7 +40,13 @@ func (r *Repository) User(ctx context.Context, user request.User) (db.User, erro
 func (r *Repository) Subscribe(ctx context.Context, subscriber request.SubscribeRequest) (db.Subscribe, error) {
 	r.logger.Info("subscribing user", zap.Any("subscriber", subscriber))
 	tx, err := r.dbConn.BeginTx(ctx, nil)
-	defer tx.Rollback()
+	defer func() {
+		if err != nil {
+			if rbErr := tx.Rollback(); rbErr != nil {
+				r.logger.Error("failed to rollback", zap.Error(rbErr))
+			}
+		}
+	}()
 
 	if err != nil {
 		r.logger.Error("failed to start transaction", zap.Error(err))
@@ -88,7 +93,14 @@ func (r *Repository) Subscribe(ctx context.Context, subscriber request.Subscribe
 func (r *Repository) Unsubscribe(ctx context.Context, unsubscribeRequest request.UnsubscribeRequest) (db.Subscribe, error) {
 	r.logger.Info("unsubscribing user", zap.Any("unsubscribe", unsubscribeRequest))
 	tx, err := r.dbConn.BeginTx(ctx, nil)
-	defer tx.Rollback()
+	defer func() {
+		if err != nil {
+			if rbErr := tx.Rollback(); rbErr != nil {
+				r.logger.Error("failed to rollback", zap.Error(rbErr))
+			}
+		}
+	}()
+
 	if err != nil {
 		r.logger.Error("failed to start transaction", zap.Error(err))
 		return db.Subscribe{}, err
@@ -253,7 +265,7 @@ func (r *Repository) UpdateSubscriber(ctx context.Context, update request.Update
 
 	// Вернуть обновленные данные
 	subscriptions := request.Subscriptions{
-		UserId:        strconv.Itoa(int(update.UserID)),
+		UserId:        update.UserID,
 		WalletAddress: update.WalletAddress,
 	}
 	return r.getSubscriptions(ctx, subscriptions)

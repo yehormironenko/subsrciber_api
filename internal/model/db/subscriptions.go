@@ -1,7 +1,7 @@
 package db
 
 type Subscriptions struct {
-	UserID  string
+	UserID  uint
 	Wallets []Wallet
 }
 

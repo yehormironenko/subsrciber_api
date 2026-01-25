@@ -4,7 +4,7 @@ import "time"
 
 type Subscribe struct {
 	SubscriptionID int
-	UserID         int
+	UserID         uint
 	WalletAddress  string
 	CreatedAt      time.Time
 	Notification   *Notification

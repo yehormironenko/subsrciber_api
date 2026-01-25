@@ -3,7 +3,7 @@ package db
 import "time"
 
 type User struct {
-	UserID     int
+	UserID     uint
 	Email      string
 	CreateTime time.Time
 }

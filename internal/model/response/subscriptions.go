@@ -1,7 +1,7 @@
 package response
 
 type Subscriptions struct {
-	UserID  string   `json:"user_id"`
+	UserID  uint     `json:"user_id"`
 	Wallets []Wallet `json:"wallets"`
 }
 
