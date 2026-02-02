@@ -6,6 +6,11 @@
 *.dylib
 .DS_Store
 
+.env
+*.env
+config.local.yaml
+TODO
+
 # Jetbrains workspace files
 .idea/
 .claude

@@ -3,6 +3,8 @@ package client
 import (
 	"database/sql"
 	"fmt"
+	"os"
+	"strconv"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -13,8 +15,41 @@ import (
 )
 
 func CreatePostgresClient(c *config.Config, logger *zap.Logger) *sql.DB {
-	dsn := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
-		c.Postgres.Username, c.Postgres.Password, c.Postgres.Host, c.Postgres.Port, c.Postgres.Database)
+	var (
+		username = os.Getenv("POSTGRES_USERNAME")
+		password = os.Getenv("POSTGRES_PASSWORD")
+		host     = os.Getenv("POSTGRES_HOST")
+		port     = os.Getenv("POSTGRES_PORT")
+		database = os.Getenv("POSTGRES_NAME")
+	)
+
+	if username == "" {
+		username = c.Postgres.Username
+	}
+
+	if password == "" {
+		password = c.Postgres.Password
+	}
+
+	if host == "" {
+		host = c.Postgres.Host
+	}
+
+	if port == "" {
+		port = strconv.Itoa(c.Postgres.Port)
+	}
+
+	if database == "" {
+		database = c.Postgres.Database
+	}
+
+	sslmode := os.Getenv("POSTGRES_SSL_MODE")
+	if sslmode == "" {
+		sslmode = "disable" // default для dev
+	}
+
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
+		username, password, host, port, database, sslmode)
 
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {

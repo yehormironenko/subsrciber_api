@@ -38,5 +38,10 @@ func NewConfig(configPath string) (*Config, error) {
 		return nil, err
 	}
 
+	// Override из env переменных (приоритет выше)
+	if password := os.Getenv("POSTGRES_PASSWORD"); password != "" {
+		config.Postgres.Password = password
+	}
+
 	return config, nil
 }
