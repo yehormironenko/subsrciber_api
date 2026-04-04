@@ -263,7 +263,6 @@ func (r *Repository) UpdateSubscriber(ctx context.Context, update request.Update
 		return db.Subscriptions{}, err
 	}
 
-	// Вернуть обновленные данные
 	subscriptions := request.Subscriptions{
 		UserId:        update.UserID,
 		WalletAddress: update.WalletAddress,

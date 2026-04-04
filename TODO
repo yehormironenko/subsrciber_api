@@ -1,18 +1,94 @@
-  3. Пароли в репозитории
+# TODO: Архитектурные проблемы
 
-  config.yaml содержит пароли в открытом виде - нужно перенести в переменные окружения или .env файл
+## 🚨 КРИТИЧЕСКИЕ (исправить немедленно):
 
 
-  ⚠️ ВАЖНЫЕ проблемы:
+### 2. Нет аутентификации [БЕЗОПАСНОСТЬ]
+**Проблема:** Любой может создавать/удалять подписки для любого пользователя
+**Исправление:**
+- Создать `internal/middleware/auth.go`
+- Добавить проверку API ключа в хедере `X-API-Key`
+- Применить middleware в main.go
 
-  5. SSL отключен (sslmode=disable) - уязвимость безопасности для продакшена
-  7. Нет явного defer tx.Rollback() - хрупкая обработка ошибок транзакций
+### 3. Нет тестов
+**Проблема:** 0% test coverage, нет уверенности что код работает
+**Исправление:** Добавить unit tests для service и repository слоев
 
-  📋 Средний приоритет:
+---
 
-  - Нет тестов (0% покрытия)
-  - Нет middleware (логирование, CORS, rate limiting)
-  - Нет кастомных типов ошибок
-  - WebSocket не реализован (TODO на линии 11 subscriber.go)
-  - Конфигурация не валидируется при загрузке
-  - Нет индексов на некоторых внешних ключах
+## ⚠️ ВАЖНЫЕ (исправить скоро):
+
+### 6. Неправильные HTTP статус коды
+**Проблема:** Все ошибки возвращают 500
+**Исправление:**
+- 201 Created для POST
+- 404 Not Found
+- 409 Conflict для дубликатов
+- 400 Bad Request для валидации
+
+### 8. Нет middleware
+**Отсутствует:**
+- Request logging
+- CORS
+- Rate limiting
+- Recovery
+- Request ID
+
+### 9. Нет кастомных error types
+**Проблема:** Все ошибки как generic `error`
+**Исправление:** Создать error types (ValidationError, NotFoundError, etc.)
+
+---
+
+## 📋 СРЕДНИЕ (улучшения):
+
+### 11. Hardcoded значения
+- Connection pool settings в коде
+- Port 5433 hardcoded
+- Нужно в конфиг
+
+### 12. Inline SQL запросы
+- Не переиспользуются
+- Лучше sqlc или query builder
+
+### 13. Нет API документации
+- Swagger/OpenAPI
+- Примеры запросов
+
+### 14. Неоптимальная структура роутов
+- Нет версионирования `/api/v1/`
+- POST вместо GET для получения данных
+- Нет группировки
+
+### 15. WebSocket не реализован
+**Файл:** `internal/model/request/subscribe.go:11`
+**TODO комментарий:** implement webSocket notification
+
+---
+
+## 🎯 РЕКОМЕНДУЕМЫЙ ПЛАН:
+
+**Приоритет 1 (30 минут):**
+1. ⬜ Исправить опечатку в названии проекта (go.mod + imports)
+2. ⬜ Убрать пароли из config
+3. ⬜ Добавить базовую аутентификацию
+
+**Приоритет 2 (1 час):**
+4. ⬜ Исправить HTTP status codes
+5. ⬜ Стандартизировать JSON naming
+
+**Потом (когда будет время):**
+- Production readiness (middleware, tests, swagger)
+- Рефакторинг (naming, опечатки)
+- Implement WebSocket notifications
+
+---
+
+## ✅ УЖЕ ИСПРАВЛЕНО:
+
+- ✅ **UserID type bug** - везде используется `uint` (было: string в Subscriptions)
+- ✅ **Transaction rollback** - правильная обработка с `defer func()` в Subscribe/Unsubscribe/UpdateSubscriber
+- ✅ **Риск panic в subscriber.go** - добавлена nil check
+- ✅ **LEFT JOIN в GetSubscriptions** - правильно объединяет wallet_subscriptions и notification_preferences
+- ✅ **wallet_address в notification_preferences** - используется в foreign key constraint
+- ✅ **UpdateSubscriber реализован** - новый endpoint `PUT /preferences` для обновления notification preferences

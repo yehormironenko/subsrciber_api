@@ -6,8 +6,8 @@ type Subscriptions struct {
 }
 
 type Wallet struct {
-	Address      string      `json:"address"`
-	Preferencies Preferences `json:"preferencies"`
+	Address     string      `json:"address"`
+	Preferences Preferences `json:"preferences"`
 }
 
 type Preferences struct {

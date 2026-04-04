@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"subscription-service/internal/client"
 	"subscription-service/internal/config"
@@ -21,7 +22,7 @@ func main() {
 	}
 	defer logger.Sync()
 
-	c, err := config.NewConfig("internal/config/config.yaml")
+	c, err := config.NewConfig(getConfigPath())
 	if err != nil {
 		panic(err)
 	}
@@ -41,4 +42,12 @@ func main() {
 	handlers.Register(r)
 
 	r.Run(fmt.Sprintf("%s:%d", c.Server.Host, c.Server.Port))
+}
+
+func getConfigPath() string {
+	configPath := os.Getenv("CONFIG_PATH")
+	if configPath == "" {
+		return "internal/config/config.yaml"
+	}
+	return configPath
 }

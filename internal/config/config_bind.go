@@ -3,8 +3,6 @@ package config
 import (
 	"os"
 	"time"
-
-	"gopkg.in/yaml.v3"
 )
 
 type Config struct {
@@ -36,11 +34,6 @@ func NewConfig(configPath string) (*Config, error) {
 
 	if err = d.Decode(&config); err != nil {
 		return nil, err
-	}
-
-	// Override из env переменных (приоритет выше)
-	if password := os.Getenv("POSTGRES_PASSWORD"); password != "" {
-		config.Postgres.Password = password
 	}
 
 	return config, nil

@@ -49,7 +49,7 @@ func dbSubscriptionsToJsonModel(subs db.Subscriptions) response.Subscriptions {
 	var wallets []response.Wallet
 	for _, v := range subs.Wallets {
 		wallets = append(wallets, response.Wallet{Address: v.Address,
-			Preferencies: response.Preferences{EmailNotifications: &v.Preferences.Email, WebSocketNotifications: &v.Preferences.Websocket}})
+			Preferences: response.Preferences{EmailNotifications: &v.Preferences.Email, WebSocketNotifications: &v.Preferences.Websocket}})
 	}
 
 	return response.Subscriptions{
